@@ -7,9 +7,24 @@ class User(DjangoObjectType):
         model = UserModel
 
 class Query(graphene.ObjectType):
-    users = graphene.List(User)
+    all_users = graphene.List(User)
 
-    def resolve_users(self, info):
+    user = graphene.Field(User,id=graphene.Int(), name=graphene.String())
+
+    def resolve_all_users(self, info):
         return UserModel.objects.all()
+
+    def resolve_user(self, info, **kwargs):
+        id = kwargs.get('id')
+        name = kwargs.get('name')
+        
+        if id is not None:
+            return UserModel.objects.get(pk=id)
+
+        if name is not None:
+            return UserModel.objects.get(name=name)
+
+        return None
+
 
 schema = graphene.Schema(query=Query)
