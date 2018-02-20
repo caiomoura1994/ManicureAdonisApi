@@ -1,5 +1,6 @@
 from django.contrib import admin
 
-from .models import *
+from .models import ServiceProviderProfile,ClientProfileProfile
 
-admin.site.register(UserModel)
+admin.site.register(ServiceProviderProfile)
+admin.site.register(ClientProfileProfile)
