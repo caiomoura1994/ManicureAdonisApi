@@ -35,12 +35,12 @@ states = (
         ('SE', 'Sergipe'),
         ('TO', 'Tocantins'),
 )
+PROFILE_TYPES = (
+    (0, 'ServiceProviderProfile'),
+    (1, 'ClientProfile'),
+)
+
 class UserModel(models.Model):
-    PROFILE_TYPES = (
-        (0, 'ServiceProviderProfile'),
-        (1, 'ClientProfile'),
-        
-    )
     gender = models.CharField(
         max_length=1,
         choices=GENDER,
@@ -51,7 +51,6 @@ class UserModel(models.Model):
         choices=PROFILE_TYPES,
         default=PROFILE_TYPES[0][0]
     )
-
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
