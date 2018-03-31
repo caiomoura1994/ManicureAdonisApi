@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 GRAPHENE = {
-    'SCHEMA': 'accounts.schema.schema',
+    'SCHEMA': 'adonisapi.schema.schema',
     'SCHEMA_OUTPUT': 'schema.json' 
 }
 MIDDLEWARE = [
