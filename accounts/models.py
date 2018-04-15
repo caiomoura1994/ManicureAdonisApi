@@ -54,6 +54,7 @@ class UserModel(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name="user_model"
     )
     online = models.BooleanField(default=False)
     biography = models.CharField(max_length=420, blank=True, null=True, default='')

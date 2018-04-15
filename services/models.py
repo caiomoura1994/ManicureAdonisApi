@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+from accounts.models import ServiceProviderProfile, UserModel
 class Category(models.Model):
     name = models.CharField(max_length=200)
     icon = models.CharField(max_length=200)
@@ -17,18 +17,14 @@ class SubCategory(models.Model):
 
 
 class Service(models.Model):
-    # STATUS_CHOICES = (
-    #     ('1','Em andamento'),
-    #     ('2','Finalizado')
-    # )
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, default=0)
     description = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     price = models.IntegerField(default=0)
-    # status = models.CharField(max_length=1,choices=STATUS_CHOICES, default='1')
     professional_owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        UserModel,
         on_delete=models.CASCADE,
+        related_name="services"
     )
 
     def __str__(self):

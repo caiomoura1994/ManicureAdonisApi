@@ -12,6 +12,10 @@ class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
 
+class ServiceType(DjangoObjectType):
+    class Meta:
+        model = Service
+
 class SubCategoryType(DjangoObjectType):
     class Meta:
         model = SubCategory
@@ -20,7 +24,11 @@ class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
     def resolve_all_users(self, info):
         return UserModel.objects.all()
-    
+        
+    service = graphene.List(ServiceType)
+    def resolve_service(self, info):
+        return Service.objects.all()
+        
     all_categories = graphene.List(CategoryType)
     def resolve_all_categories(self, info):
         return Category.objects.all()
@@ -37,6 +45,14 @@ class Query(graphene.ObjectType):
         if name is not None:
             return Category.objects.get(name=name)
 
+        return None
+        
+    
+    search_service = graphene.List(ServiceType,sub_category=graphene.Int())
+    def resolve_search_service(self, info, **kwargs):
+        sub_category = kwargs.get('sub_category')
+        if sub_category is not None:
+            return Service.objects.filter(sub_category=sub_category)
         return None
 
     
