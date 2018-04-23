@@ -39,8 +39,9 @@ class ServiceRegister(models.Model):
     )
 
     STATUS_CHOICES = (
-        ('1','Em andamento'),
-        ('2','Finalizado')
+        ('1','Aguardando confirmação'),
+        ('2','Em andamento'),
+        ('3','Finalizado')
     )
 
     service = models.ForeignKey(Service, on_delete=models.CASCADE, default=0)
