@@ -65,8 +65,8 @@ class UserModel(models.Model):
     phone = models.CharField(max_length=100, default='')
     avatar = models.ImageField(upload_to='images/profiles/', null=True, blank=True)
 
-    def __str__(self):
-        return ('%s' % self.user)
+    # def __str__(self):
+    #     return ('%s' % self.user)
 
     @property
     def user_detail(self):
