@@ -10,29 +10,32 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 from django.utils import timezone
 
 class ServiceRegisterInput(graphene.InputObjectType):
-    # date = graphene.String()
     address_attendance = graphene.String()
     client = graphene.Int()
     payment = graphene.String()
     payed = graphene.Boolean()
     status = graphene.String()
+    service = graphene.Int()
+    user_id = graphene.Int()
 
 
 class CreateServiceRegister(graphene.Mutation):
+    # class Arguments:
+    #     new_service = graphene.Argument(ServiceRegisterInput)
     class Arguments:
-        new_service = graphene.Argument(ServiceRegisterInput)
+        new_service = ServiceRegisterInput(required=True)
     
     pk = graphene.Int()
     count = graphene.Int()
     new_service = graphene.Field(lambda: ServiceRegisterType)
     def mutate(self, info, new_service ):
         
-        user_object=UserModel.objects.all()[0].user
-        service_instance= Service.objects.all()[0]
+        user_object=UserModel.objects.get(pk=new_service.user_id).user
+        service_object= Service.objects.get(pk=new_service.service)
         
         new_service = ServiceRegisterModel(
             date=timezone.now(),
-            service=service_instance,
+            service=service_object,
             address_attendance=new_service.address_attendance, 
             client=user_object,
             payed=new_service.payed, 
@@ -41,26 +44,53 @@ class CreateServiceRegister(graphene.Mutation):
             )
 
         new_service.save()
-        
+
         count = ServiceRegisterModel.objects.count()
-
+        
+        print(type(new_service.client))
+        
         return CreateServiceRegister(new_service=new_service, pk=new_service.pk, count=count)
-
-class ServiceRegisterType(graphene.ObjectType):
-    # date = graphene.String()
-    address_attendance = graphene.String()
-    client = graphene.Int()
-    payment = graphene.String()
-    payed = graphene.Boolean()
-    status = graphene.String()
-
-class MyMutations(graphene.ObjectType):
-    create_service_regiter = CreateServiceRegister.Field()
-
 
 class UserType(DjangoObjectType):
     class Meta:
         model = UserModel
+
+class ServiceRegisterType(graphene.ObjectType):
+    date = graphene.String()
+    address_attendance = graphene.String()
+    payment = graphene.String()
+    payed = graphene.Boolean()
+    status = graphene.String()
+    
+    client = graphene.Field(UserType)
+    
+    # search_category = graphene.Field(CategoryType,id=graphene.Int(), name=graphene.String())
+
+    # mutation{createServiceRegiter(newService:{
+    #   addressAttendance:"aaa",
+    #   client:1,
+    #   payment:"1",
+    #   payed:true,
+    #   status:"1",
+    #   service:1,
+    #   userId:1
+    
+    # }) {
+    #   pk
+    #   count
+    #   newService {
+    #     client{
+    #       id
+    #     }
+    #     addressAttendance
+    #     payment
+    #     payed
+    #     status
+    #   }
+    # }}
+class MyMutations(graphene.ObjectType):
+    create_service_regiter = CreateServiceRegister.Field()
+
 
 class CategoryType(DjangoObjectType):
     class Meta:
