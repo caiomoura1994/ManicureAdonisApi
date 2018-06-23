@@ -19,13 +19,11 @@ class ServiceRegisterInput(graphene.InputObjectType):
     user_id = graphene.Int()
 
 
+# Create a service order
 class CreateServiceRegister(graphene.Mutation):
-    # class Arguments:
-    #     new_service = graphene.Argument(ServiceRegisterInput)
     class Arguments:
         new_service = ServiceRegisterInput(required=True)
     
-    pk = graphene.Int()
     count = graphene.Int()
     new_service = graphene.Field(lambda: ServiceRegisterType)
     def mutate(self, info, new_service ):
@@ -47,9 +45,8 @@ class CreateServiceRegister(graphene.Mutation):
 
         count = ServiceRegisterModel.objects.count()
         
-        print(type(new_service.client))
         
-        return CreateServiceRegister(new_service=new_service, pk=new_service.pk, count=count)
+        return CreateServiceRegister(new_service=new_service, count=count)
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -61,11 +58,25 @@ class ServiceRegisterType(graphene.ObjectType):
     payment = graphene.String()
     payed = graphene.Boolean()
     status = graphene.String()
+    pk = graphene.Int()
     
-    client = graphene.Field(UserType)
+    # client = graphene.Field(UserType)
     
-    # search_category = graphene.Field(CategoryType,id=graphene.Int(), name=graphene.String())
+    # client = graphene.Field(UserType, user_pk=graphene.Int())
+    # def resolve_client(self, info, **kwargs):
+    #     user_pk = kwargs.get('user_pk')
+    #     # print("==========================================")
+    #     # print(user_pk)
+    #     # print(type(user_pk))
+    #     # print("==========================================")
+    #     if user_pk is not None:
+    #         return UserModel.objects.get(pk=user_pk)
+    #     return None
 
+    # pk = graphene.Int()
+    # def mutate(self, info):
+    #     pk = 1
+    #     return ServiceRegisterType(pk=pk)
     # mutation{createServiceRegiter(newService:{
     #   addressAttendance:"aaa",
     #   client:1,
@@ -74,7 +85,6 @@ class ServiceRegisterType(graphene.ObjectType):
     #   status:"1",
     #   service:1,
     #   userId:1
-    
     # }) {
     #   pk
     #   count
