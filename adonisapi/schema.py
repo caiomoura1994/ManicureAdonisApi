@@ -8,6 +8,7 @@ from services.models import ServiceRegister as ServiceRegisterModel
 from graphene_django.rest_framework.mutation import SerializerMutation
 
 from django.utils import timezone
+from django.core import serializers
 
 class ServiceRegisterInput(graphene.InputObjectType):
     address_attendance = graphene.String()
@@ -62,16 +63,12 @@ class ServiceRegisterType(graphene.ObjectType):
     
     # client = graphene.Field(UserType)
     
-    # client = graphene.Field(UserType, user_pk=graphene.Int())
-    # def resolve_client(self, info, **kwargs):
-    #     user_pk = kwargs.get('user_pk')
-    #     # print("==========================================")
-    #     # print(user_pk)
-    #     # print(type(user_pk))
-    #     # print("==========================================")
-    #     if user_pk is not None:
-    #         return UserModel.objects.get(pk=user_pk)
-    #     return None
+    client = graphene.Field(graphene.types.json.JSONString)
+    def resolve_client(self, info):
+        user= UserModel.objects.get(pk=self.client.pk)
+        data_json = serializers.serialize("json", [user, ])
+        print(data_json)
+        return data_json
 
     # pk = graphene.Int()
     # def mutate(self, info):
