@@ -9,94 +9,16 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 
 from django.utils import timezone
 from django.core import serializers
-
-class ServiceRegisterInput(graphene.InputObjectType):
-    address_attendance = graphene.String()
-    client = graphene.Int()
-    payment = graphene.String()
-    payed = graphene.Boolean()
-    status = graphene.String()
-    service = graphene.Int()
-    user_id = graphene.Int()
-
-
-# Create a service order
-class CreateServiceRegister(graphene.Mutation):
-    class Arguments:
-        new_service = ServiceRegisterInput(required=True)
-    
-    count = graphene.Int()
-    new_service = graphene.Field(lambda: ServiceRegisterType)
-    def mutate(self, info, new_service ):
-        
-        user_object=UserModel.objects.get(pk=new_service.user_id).user
-        service_object= Service.objects.get(pk=new_service.service)
-        
-        new_service = ServiceRegisterModel(
-            date=timezone.now(),
-            service=service_object,
-            address_attendance=new_service.address_attendance, 
-            client=user_object,
-            payed=new_service.payed, 
-            payment=new_service.payment, 
-            status=new_service.status
-            )
-
-        new_service.save()
-
-        count = ServiceRegisterModel.objects.count()
-        
-        
-        return CreateServiceRegister(new_service=new_service, count=count)
+from accounts.mutations import CreateAccount
+from services.mutations import CreateServiceRegister
 
 class UserType(DjangoObjectType):
     class Meta:
         model = UserModel
 
-class ServiceRegisterType(graphene.ObjectType):
-    date = graphene.String()
-    address_attendance = graphene.String()
-    payment = graphene.String()
-    payed = graphene.Boolean()
-    status = graphene.String()
-    pk = graphene.Int()
-    
-    # client = graphene.Field(UserType)
-    
-    client = graphene.Field(graphene.types.json.JSONString)
-    def resolve_client(self, info):
-        user= UserModel.objects.get(pk=self.client.pk)
-        data_json = serializers.serialize("json", [user, ])
-        print(data_json)
-        return data_json
-
-    # pk = graphene.Int()
-    # def mutate(self, info):
-    #     pk = 1
-    #     return ServiceRegisterType(pk=pk)
-    # mutation{createServiceRegiter(newService:{
-    #   addressAttendance:"aaa",
-    #   client:1,
-    #   payment:"1",
-    #   payed:true,
-    #   status:"1",
-    #   service:1,
-    #   userId:1
-    # }) {
-    #   pk
-    #   count
-    #   newService {
-    #     client{
-    #       id
-    #     }
-    #     addressAttendance
-    #     payment
-    #     payed
-    #     status
-    #   }
-    # }}
 class MyMutations(graphene.ObjectType):
     create_service_regiter = CreateServiceRegister.Field()
+    create_account = CreateAccount.Field()
 
 
 class CategoryType(DjangoObjectType):
@@ -112,8 +34,6 @@ class SubCategoryType(DjangoObjectType):
         model = SubCategory
         
 class Query(graphene.ObjectType):
-    # new_service = graphene.Field(ServiceRegisterType)
-
     all_users = graphene.List(UserType)
     def resolve_all_users(self, info):
         return UserModel.objects.all()
