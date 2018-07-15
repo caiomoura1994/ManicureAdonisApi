@@ -9,7 +9,7 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 
 from django.utils import timezone
 from django.core import serializers
-from accounts.mutations import CreateAccount
+from accounts.mutations import CreateAccount, Login
 from services.mutations import CreateServiceRegister
 
 class UserType(DjangoObjectType):
@@ -19,6 +19,7 @@ class UserType(DjangoObjectType):
 class MyMutations(graphene.ObjectType):
     create_service_regiter = CreateServiceRegister.Field()
     create_account = CreateAccount.Field()
+    login = Login.Field()
 
 
 class CategoryType(DjangoObjectType):
