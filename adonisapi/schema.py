@@ -3,36 +3,12 @@ import graphene
 from accounts.models import UserModel
 
 from services.models import Service, Category, SubCategory
-from services.models import ServiceRegister as ServiceRegisterModel
+# from services.models import ServiceRegister as ServiceRegisterModel
 
-from graphene_django.rest_framework.mutation import SerializerMutation
-
-from django.utils import timezone
-from django.core import serializers
 from accounts.mutations import CreateAccount, Login
-from services.mutations import CreateServiceRegister
-
-class UserType(DjangoObjectType):
-    class Meta:
-        model = UserModel
-
-class MyMutations(graphene.ObjectType):
-    create_service_regiter = CreateServiceRegister.Field()
-    create_account = CreateAccount.Field()
-    login = Login.Field()
-
-
-class CategoryType(DjangoObjectType):
-    class Meta:
-        model = Category
-
-class ServiceType(DjangoObjectType):
-    class Meta:
-        model = Service
-
-class SubCategoryType(DjangoObjectType):
-    class Meta:
-        model = SubCategory
+from services.mutations import ServiceRegister, CreateService
+from accounts.types import UserType
+from services.types import CategoryType, ServiceType, SubCategoryType
         
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
@@ -102,5 +78,10 @@ class Query(graphene.ObjectType):
 
         return None
 
+class MyMutations(graphene.ObjectType):
+    create_service = CreateService.Field()
+    create_service_regiter = ServiceRegister.Field()
+    create_account = CreateAccount.Field()
+    login = Login.Field()
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)

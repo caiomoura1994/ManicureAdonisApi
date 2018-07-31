@@ -4,6 +4,7 @@ from django.core import serializers
 from accounts.models import UserModel
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from .types import AccountType
 
 class AccountInput(graphene.InputObjectType):
     gender = graphene.String() 
@@ -17,15 +18,6 @@ class AccountInput(graphene.InputObjectType):
     email = graphene.String()
     password = graphene.String()
 
-class AccountType(graphene.ObjectType):
-    gender = graphene.String() 
-    profile_type = graphene.Int()
-    biography = graphene.String()
-    state = graphene.String()
-    city = graphene.String()
-    name = graphene.String()
-    last_name = graphene.String()
-    phone = graphene.String()
     
 class CreateAccount(graphene.Mutation):
     class Arguments:
