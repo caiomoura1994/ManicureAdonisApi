@@ -3,12 +3,12 @@ import graphene
 from accounts.models import UserModel
 
 from services.models import Service, Category, SubCategory
-# from services.models import ServiceRegister as ServiceRegisterModel
+from services.models import ServiceRegister as ServiceRegisterModel
 
 from accounts.mutations import CreateAccount, Login
 from services.mutations import ServiceRegister, CreateService
 from accounts.types import UserType
-from services.types import CategoryType, ServiceType, SubCategoryType
+from services.types import CategoryType, ServiceType, SubCategoryType, ServiceRegisterType
         
 class Query(graphene.ObjectType):
     all_users = graphene.List(UserType)
@@ -44,7 +44,13 @@ class Query(graphene.ObjectType):
         if sub_category is not None:
             return Service.objects.filter(sub_category=sub_category)
         return None
-
+    
+    search_service_register = graphene.List(ServiceRegisterType, professional_id=graphene.Int())
+    def resolve_search_service_register(self, info, **kwargs):
+        professional_id = kwargs.get('professional_id')
+        if professional_id is not None:
+            return ServiceRegisterModel.objects.filter(client=professional_id)
+        return None
     
     user = graphene.Field(UserType,id=graphene.Int(), name=graphene.String())
     def resolve_user(self, info, **kwargs):

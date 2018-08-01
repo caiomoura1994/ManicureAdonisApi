@@ -7,16 +7,16 @@ from django.contrib.auth import authenticate, login
 from .types import AccountType
 
 class AccountInput(graphene.InputObjectType):
-    gender = graphene.String() 
-    profile_type = graphene.Int()
+    gender = graphene.String(required=True) 
+    profile_type = graphene.Int(required=True)
     biography = graphene.String()
-    state = graphene.String()
-    city = graphene.String()
-    name = graphene.String()
-    last_name = graphene.String()
-    phone = graphene.String()
-    email = graphene.String()
-    password = graphene.String()
+    state = graphene.String(required=True)
+    city = graphene.String(required=True)
+    name = graphene.String(required=True)
+    last_name = graphene.String(required=True)
+    phone = graphene.String(required=True)
+    email = graphene.String(required=True)
+    password = graphene.String(required=True)
 
     
 class CreateAccount(graphene.Mutation):

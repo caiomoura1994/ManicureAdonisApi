@@ -46,8 +46,9 @@ class ServiceRegister(models.Model):
 
     service = models.ForeignKey(Service, on_delete=models.CASCADE, default=0)
     client = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        UserModel,
         on_delete=models.CASCADE,
+        related_name="services_registers"
     )
     date = models.DateTimeField('Registro de data e hora do serviço')
     address_attendance = models.CharField(max_length=200)    
