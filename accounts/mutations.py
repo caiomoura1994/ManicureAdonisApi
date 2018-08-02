@@ -4,7 +4,7 @@ from django.core import serializers
 from accounts.models import UserModel
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
-from .types import AccountType
+from .types import UserType
 
 class AccountInput(graphene.InputObjectType):
     gender = graphene.String(required=True) 
@@ -23,7 +23,7 @@ class CreateAccount(graphene.Mutation):
     class Arguments:
         new_account = AccountInput(required=True)
     count = graphene.Int()
-    new_account = graphene.Field(lambda: AccountType)
+    new_account = graphene.Field(lambda: UserType)
     def mutate(self, info, new_account ):
         user = User.objects.create_user(new_account.email, new_account.email, new_account.password)
         if user is not None:
@@ -45,9 +45,8 @@ class CreateAccount(graphene.Mutation):
         new_account.save()
 
         count = UserModel.objects.count()
-        
-        
-        return CreateAccount(new_account=new_account, count=count)
+        service_response = UserModel.objects.get(pk=new_account.pk)
+        return CreateAccount(new_account=service_response, count=count)
 
 class LoginInput(graphene.InputObjectType):
     username = graphene.String(required=True)
