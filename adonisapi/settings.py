@@ -83,13 +83,24 @@ WSGI_APPLICATION = 'adonisapi.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if os.getenv["prod"]:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'mydatabase',
+            'USER': 'oxojpacnpctkii',
+            'PASSWORD': 'bc7a4af9681183615fb6ec73b1351874f2336761d7e9ae2753c483f4b65b0999',
+            'HOST': 'ec2-54-235-193-34.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
     }
-}
-
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
