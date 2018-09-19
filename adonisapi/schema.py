@@ -1,17 +1,24 @@
 import graphene
-from accounts.models import UserModel
+from django.core.paginator import Paginator
 
+from accounts.models import UserModel
 from services.models import Service, Category, SubCategory
 from services.models import ServiceRegister as ServiceRegisterModel
 
 from accounts.mutations import CreateAccount, Login
 from services.mutations import ServiceRegister, CreateService
+
 from accounts.types import UserType
-from services.types import CategoryType, ServiceType, SubCategoryType, ServiceRegisterType
-        
+from services.types import CategoryType, ServiceType, SubCategoryType, ServicePaginatedType, ServiceRegisterPaginatedType
+from utils.utils import get_paginator
+page_size_default=10
+
 class Query(graphene.ObjectType):
-    all_users = graphene.List(UserType)
-    def resolve_all_users(self, info):
+    all_users = graphene.List(UserType, profile_type=graphene.Int())
+    def resolve_all_users(self, info, **kwargs):
+        profile_type = kwargs.get('profile_type')
+        if profile_type is not None:
+            return UserModel.objects.filter(profile_type=profile_type)
         return UserModel.objects.all()
         
     service = graphene.List(ServiceType)
@@ -22,7 +29,7 @@ class Query(graphene.ObjectType):
     def resolve_all_categories(self, info):
         return Category.objects.all()
     
-    search_category = graphene.Field(CategoryType,id=graphene.Int(), name=graphene.String())
+    search_category = graphene.Field(CategoryType, id=graphene.Int(), name=graphene.String())
     def resolve_search_category(self, info, **kwargs):
         id = kwargs.get('id')
         
@@ -36,19 +43,30 @@ class Query(graphene.ObjectType):
 
         return None
         
-    
-    search_service = graphene.List(ServiceType,sub_category=graphene.Int())
+    search_service = graphene.Field(ServicePaginatedType, sub_category=graphene.Int(), page=graphene.Int(), page_size=graphene.Int())
     def resolve_search_service(self, info, **kwargs):
         sub_category = kwargs.get('sub_category')
+        page = kwargs.get('page')
+        page_size = kwargs.get('page_size')
+        if not page_size:
+            page_size = page_size_default
+
         if sub_category is not None:
-            return Service.objects.filter(sub_category=sub_category)
+            services = Service.objects.filter(sub_category=sub_category)
+            return get_paginator(services, page_size, page, ServicePaginatedType)
         return None
     
-    search_service_register = graphene.List(ServiceRegisterType, professional_id=graphene.Int())
+    search_service_register = graphene.Field(ServiceRegisterPaginatedType, professional_id=graphene.Int(), page=graphene.Int(), page_size=graphene.Int())
     def resolve_search_service_register(self, info, **kwargs):
         professional_id = kwargs.get('professional_id')
+        page = kwargs.get('page')
+        page_size = kwargs.get('page_size')
+        if not page_size:
+            page_size = page_size_default
+
         if professional_id is not None:
-            return ServiceRegisterModel.objects.filter(client=professional_id)
+            services_register = ServiceRegisterModel.objects.filter(client=professional_id)
+            return get_paginator(services_register, page_size, page, ServiceRegisterPaginatedType)
         return None
     
     user = graphene.Field(UserType,id=graphene.Int(), name=graphene.String())
