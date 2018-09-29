@@ -5,7 +5,7 @@ from accounts.models import UserModel
 from services.models import Service, Category, SubCategory
 from services.models import ServiceRegister as ServiceRegisterModel
 
-from accounts.mutations import CreateAccount, Login
+from accounts.mutations import CreateAccount, Login, ChangePassword
 from services.mutations import ServiceRegister, CreateService
 
 from accounts.types import UserType
@@ -105,6 +105,7 @@ class MyMutations(graphene.ObjectType):
     create_service = CreateService.Field()
     create_service_regiter = ServiceRegister.Field()
     create_account = CreateAccount.Field()
+    change_password = ChangePassword.Field()
     login = Login.Field()
 
 schema = graphene.Schema(query=Query, mutation=MyMutations)

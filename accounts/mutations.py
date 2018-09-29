@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .types import UserType
 
+# ==================================INPUTS==================================
 class AccountInput(graphene.InputObjectType):
     gender = graphene.String(required=True) 
     profile_type = graphene.Int(required=True)
@@ -18,7 +19,32 @@ class AccountInput(graphene.InputObjectType):
     email = graphene.String(required=True)
     password = graphene.String(required=True)
 
-    
+class LoginInput(graphene.InputObjectType):
+    username = graphene.String(required=True)
+    password = graphene.String(required=True)
+
+class ChangePasswordInput(graphene.InputObjectType):
+    old_password = graphene.String()
+    new_password = graphene.String()
+    pk = graphene.Int()
+
+# ==================================FIELDS==================================
+class UserField(graphene.ObjectType):
+    avatar = graphene.String()
+    biography = graphene.String()
+    id = graphene.String()
+    city = graphene.String()
+    last_name = graphene.String()
+    state = graphene.String()
+    name = graphene.String()
+    online = graphene.Boolean()
+    phone = graphene.String()
+    user_id = graphene.Int()
+    pk = graphene.Int()
+    gender = graphene.String()
+    profile_type = graphene.String()
+
+# ==================================MUTATIONS==================================
 class CreateAccount(graphene.Mutation):
     class Arguments:
         new_account = AccountInput(required=True)
@@ -48,25 +74,6 @@ class CreateAccount(graphene.Mutation):
         service_response = UserModel.objects.get(pk=new_account.pk)
         return CreateAccount(new_account=service_response, count=count)
 
-class LoginInput(graphene.InputObjectType):
-    username = graphene.String(required=True)
-    password = graphene.String(required=True)
-
-class UserField(graphene.ObjectType):
-    avatar = graphene.String()
-    biography = graphene.String()
-    id = graphene.String()
-    city = graphene.String()
-    last_name = graphene.String()
-    state = graphene.String()
-    name = graphene.String()
-    online = graphene.Boolean()
-    phone = graphene.String()
-    user_id = graphene.Int()
-    pk = graphene.Int()
-    gender = graphene.String()
-    profile_type = graphene.String()
-
 class Login(graphene.Mutation):
     class Arguments:
         login_input = LoginInput(required=True)
@@ -94,3 +101,18 @@ class Login(graphene.Mutation):
                     gender=profile.gender,
                     profile_type=profile.profile_type,
                     )
+
+class ChangePassword(graphene.Mutation):
+    class Arguments:
+        change_password_input = ChangePasswordInput(required=True)
+    error = graphene.Boolean()
+    message = graphene.String()
+    def mutate(self, info, change_password_input):
+        user = User.objects.get(pk=change_password_input.pk)
+        old_password_is_valid = user.check_password(change_password_input.old_password)
+        if old_password_is_valid:
+            user.set_password(change_password_input.new_password)
+            user.save()
+            return ChangePassword(error=False, message="Senha alterada com sucesso.")
+        else:
+            return ChangePassword(error=True, message="Senha antiga invalida.")
